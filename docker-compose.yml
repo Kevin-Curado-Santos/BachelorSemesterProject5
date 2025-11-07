@@ -1,0 +1,15 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: cli-eval-api
+    volumes:
+      - ./api/data:/app/data
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    image: cli-eval-client
+    ports:
+      - "80:80"

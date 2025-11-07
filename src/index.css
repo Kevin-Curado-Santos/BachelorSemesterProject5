@@ -1,0 +1,46 @@
+body {
+  margin: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+@font-face {
+  font-family: "Arial";
+  src: local("Arial"), url("./fonts/arial.ttf");
+}
+@font-face {
+  font-family: "Georgia";
+  src: local("Georgia"), url("./fonts/georgia.ttf");
+}
+@font-face {
+  font-family: "Merriweather";
+  src: local("Merriweather"), url("./fonts/merriweather.ttf");
+}
+@font-face {
+  font-family: "OpenSans";
+  src: local("OpenSans"), url("./fonts/open_sans.ttf");
+}
+@font-face {
+  font-family: "Poppins";
+  src: local("Poppins"), url("./fonts/poppins.ttf");
+}
+@font-face {
+  font-family: "Roboto";
+  src: local("Roboto"), url("./fonts/roboto.ttf");
+}
+@font-face {
+  font-family: "SourceSerifPro";
+  src: local("SourceSerifPro"), url("./fonts/source_serif_pro.ttf");
+}
+@font-face {
+  font-family: "Times";
+  src: local("Times"), url("./fonts/times.ttf");
+}

@@ -1,0 +1,9 @@
+FROM python:3.10
+WORKDIR /app
+
+COPY api/* ./
+RUN pip install poetry
+RUN poetry install
+
+EXPOSE 5000
+CMD ["poetry", "run", "gunicorn", "-b", ":5000", "wsgi:app"]
