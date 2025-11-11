@@ -5,6 +5,8 @@ api/data/user_votes/*
 !api/data/user_votes/.gitkeep
 api/data/audio/*
 !api/data/audio/.gitkeep
+api/data/media_logs/*
+!api/data/media_logs/.gitkeep
 
 # python
 __pycache__
