@@ -35,7 +35,15 @@ with app.app_context():
     db.create_all()
 
 
-DATA_DIR =Path(os.path.dirname(__file__)).parent / "data" / "images"
+DATA_DIR = Path(os.path.dirname(__file__)).parent / "data" / "images"
+USER_DATA_DIR = Path(os.path.dirname(__file__)).parent / "data" / "user_char"
+AUDIO_DIR = Path(os.path.dirname(__file__)).parent / "data" / "audio"
+TEXT_DIR = Path(os.path.dirname(__file__)).parent / "data" / "text"
+
+
+BASE_DIR = Path(os.path.dirname(__file__))        # /app
+DATA_DIR = BASE_DIR / "data"                      # /app/data
+TEXT_DIR = DATA_DIR / "text"                      # /app/data/text
 
 
 
@@ -43,13 +51,9 @@ DATA_DIR =Path(os.path.dirname(__file__)).parent / "data" / "images"
 def save_survey():
     data = request.json
 
-    # Replace 'Name' with anonId before saving
-    # if "Name" in data and "anonId" in data:
-    #     data["Name"] = data["anonId"]
+    os.makedirs("data/user_char", exist_ok=True)
 
     df = pd.DataFrame.from_dict(data, orient="index").T
-    timestamp = get_timestamp()
-    df["timestamp"] = timestamp
     df.to_csv(f"data/user_char/{data['anonId']}.csv", index=False)
     ...
 
@@ -83,16 +87,12 @@ def save_comparisons():
 def save_audio():
     f = request.files["file"]
     
-    anon_id = request.form.get("anonId", "unknown")
+    anonId = request.form.get("anonId", "unknown")
     tag = request.form.get("tag", "audio")
 
-    from os import makedirs, path
-    base_dir = path.dirname(path.abspath(__file__))
-    user_dir = path.join(base_dir, "data", "audio", anon_id)
-    makedirs(user_dir, exist_ok=True)
+    os.makedirs(AUDIO_DIR, exist_ok=True)
 
-    timestamp = get_timestamp()
-    file_path = path.join(user_dir, f"{timestamp}_{tag}.webm")
+    file_path = os.path.join(AUDIO_DIR, f"{anonId}_{tag}.webm")
     f.save(file_path)
 
     response = json.jsonify("File received and saved!")
@@ -100,15 +100,42 @@ def save_audio():
     return response
 
 
+@app.route("/api/saveText", methods=["POST"], strict_slashes=False)
+def save_text():
+    f = request.files["file"]
+    print(f, flush=True)
+    anonId = request.form.get("anonId", "unknown")
+    tag = request.form.get("tag", "text")
+
+    os.makedirs(TEXT_DIR, exist_ok=True)
+
+    file_path = TEXT_DIR / f"{anonId}_{tag}.txt"
+    print(f"Saving to {TEXT_DIR.resolve()}", flush=True)
+    print(f"Saving file as {file_path}", flush=True)
+
+    f.save(file_path)
+
+    resp = json.jsonify("Text received and saved!")
+    resp.headers.add("Access-Control-Allow-Origin", "*")
+    return resp
+
+
+
 @app.route("/api/logMedia", methods=["POST"])
 def log_media():
-    data = request.json
-    ts = get_timestamp()
-    os.makedirs("data/media_logs", exist_ok=True)
-    pd.DataFrame([data | {"timestamp": ts}]).to_csv(
-        f"data/media_logs/{ts}.csv", index=False
-    )
-    return json.jsonify("ok")
+    f = request.files["file"]
+    anonId = request.form.get("anonId", "unknown")
+    
+    os.makedirs(TEXT_DIR, exist_ok=True)
+    
+    
+    file_path = os.path.join(TEXT_DIR, f"{anonId}.txt")
+    f.save(file_path)
+    
+    resp = json.jsonify("Text received and saved!")
+    resp.headers.add("Access-Control-Allow-Origin", "*")
+    return resp
+
 
 audio_flist = glob("data/audio/*_[0-9].webm")
 audio_flist = np.array(audio_flist)

@@ -17,7 +17,7 @@ const modes = [
 
 const feedbackModes = [
   { value: "mic", label: "Microphone" },
-  { value: "text", label: "Text input" },
+  { value: "text", label: "Keyboard" },
 ];
 
 const AdminConfig = () => {
@@ -38,7 +38,7 @@ const AdminConfig = () => {
     stored.itemsPerRound || 6
   );
   const [feedbackMode, setFeedbackMode] = useState(
-    stored.feedbackMode || "mic"
+    stored.feedbackMode.label || "mic"
   );
   const [saved, setSaved] = useState(false);
 

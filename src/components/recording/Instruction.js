@@ -17,8 +17,7 @@ export const Instruction = ({ nextLink }) => {
       </Typography>
 
       <Typography gutterBottom>
-        Then describe why you preferred that {appConfig.mode} using your{" "}
-        {appConfig.feedbackMode === "mic" ? "voice" : "text"}.
+        Then describe why you preferred that {appConfig.mode} using your {appConfig.feedbackMode}.
       </Typography>
 
       <Typography color="textSecondary" gutterBottom>

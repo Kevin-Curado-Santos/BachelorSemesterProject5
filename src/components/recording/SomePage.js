@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Typography, Container, Paper, Grid } from '@mui/material';
 import RandomImageDisplay from '../../constants/RandomImageDisplay';
 import { RecordView } from './StudyRound'; // Import the updated StudyRound component
+import { appConfig } from '../../constants/config';
 
 export const SomePage = ({ state = { uid: 'default_user' } }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -19,13 +20,13 @@ export const SomePage = ({ state = { uid: 'default_user' } }) => {
       {/* Images Section */}
       <Paper elevation={3} style={{ padding: '20px', marginTop: '20px', backgroundColor: '#f9f9f9' }}>
         <Typography variant="h5">Select an Image</Typography>
-        <RandomImageDisplay numImages={6} onSelect={setSelectedImage} selectedMedia={selectedImage} mediaType="image" />
+        <RandomImageDisplay numImages={appConfig.numImages} onSelect={setSelectedImage} selectedMedia={selectedImage} mediaType="image" />
       </Paper>
 
       {/* Videos Section */}
       <Paper elevation={3} style={{ padding: '20px', marginTop: '20px', backgroundColor: '#f9f9f9' }}>
         <Typography variant="h5">Select a Video</Typography>
-        <RandomImageDisplay numImages={3} onSelect={setSelectedVideo} selectedMedia={selectedVideo} mediaType="video" />
+        <RandomImageDisplay numImages={appConfig.numVideos} onSelect={setSelectedVideo} selectedMedia={selectedVideo} mediaType="video" />
       </Paper>
 
       {/* Display Selected Media */}
@@ -37,7 +38,7 @@ export const SomePage = ({ state = { uid: 'default_user' } }) => {
           )}
           {selectedVideo && (
             <video controls style={{ width: '200px', borderRadius: '8px', marginTop: '10px' }}>
-              <source src={selectedVideo.src} type="video/mp4" />
+              <source src={selectedVideo.src} />
               Your browser does not support the video tag.
             </video>
           )}
