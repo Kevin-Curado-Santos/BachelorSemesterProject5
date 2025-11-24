@@ -47,7 +47,6 @@ export const PreSurvey = (props) => {
       genaiExperience: genaiMap[raw.genaiExperience] || "other",
       education: educationMap[raw.Education] || "other",
       artExperience: raw.artExperience || "unknown",
-      timestamp: Date.now(),
     };
 
     fetch(`/api/saveSurvey`, {
