@@ -103,15 +103,12 @@ def save_audio():
 @app.route("/api/saveText", methods=["POST"], strict_slashes=False)
 def save_text():
     f = request.files["file"]
-    print(f, flush=True)
     anonId = request.form.get("anonId", "unknown")
     tag = request.form.get("tag", "text")
 
     os.makedirs(TEXT_DIR, exist_ok=True)
 
     file_path = TEXT_DIR / f"{anonId}_{tag}.txt"
-    print(f"Saving to {TEXT_DIR.resolve()}", flush=True)
-    print(f"Saving file as {file_path}", flush=True)
 
     f.save(file_path)
 
