@@ -1,3 +1,4 @@
+// src/components/admin/AdminConfig.js
 import React, { useState } from "react";
 import {
   Container,
@@ -17,17 +18,12 @@ const modes = [
 
 const feedbackModes = [
   { value: "mic", label: "Microphone" },
-  { value: "text", label: "Keyboard" },
+  { value: "text", label: "Text input" },
 ];
 
 const AdminConfig = () => {
   const navigate = useNavigate();
 
-  const [authorized, setAuthorized] = useState(
-    typeof window !== "undefined" &&
-      sessionStorage.getItem("adminAuth") === "true"
-  );
-  const [password, setPassword] = useState("");
   const stored =
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("appConfigOverride") || "{}")
@@ -35,11 +31,19 @@ const AdminConfig = () => {
 
   const [mode, setMode] = useState(stored.mode || "image");
   const [itemsPerRound, setItemsPerRound] = useState(
-    stored.itemsPerRound || 6
+    stored.itemsPerRound || 5
   );
   const [feedbackMode, setFeedbackMode] = useState(
-    stored.feedbackMode.label || "mic"
+    stored.feedbackMode || "mic"
   );
+
+  const [landscapeRounds, setLandscapeRounds] = useState(
+    (stored.rounds && stored.rounds.landscape) || 4
+  );
+  const [celebRounds, setCelebRounds] = useState(
+    (stored.rounds && stored.rounds.celeb) || 4
+  );
+
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -47,55 +51,22 @@ const AdminConfig = () => {
       mode,
       itemsPerRound: Number(itemsPerRound),
       feedbackMode,
+      rounds: {
+        landscape: Math.max(1, Number(landscapeRounds) || 1),
+        celeb: Math.max(1, Number(celebRounds) || 1),
+      },
     };
     localStorage.setItem("appConfigOverride", JSON.stringify(newCfg));
     setSaved(true);
     window.location.reload();
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (password === "admin123") {
-      sessionStorage.setItem("adminAuth", "true");
-      setAuthorized(true);
-    } else {
-      navigate("/");
-    }
-  };
-
-  if (!authorized) {
-    return (
-      <Container maxWidth="xs" style={{ marginTop: 80, textAlign: "center" }}>
-        <Typography variant="h5" gutterBottom>
-          Admin Login
-        </Typography>
-        <form onSubmit={handleLogin}>
-          <TextField
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            sx={{ mt: 2 }}
-          >
-            Enter
-          </Button>
-        </form>
-      </Container>
-    );
-  }
-
   return (
-    <Container maxWidth="sm" style={{ marginTop: 40 }}>
+    <Container maxWidth="sm" sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom>
         Admin Config
       </Typography>
+
       <Stack spacing={3}>
         <TextField
           select
@@ -119,7 +90,7 @@ const AdminConfig = () => {
 
         <TextField
           select
-          label="Feedback"
+          label="Feedback mode"
           value={feedbackMode}
           onChange={(e) => setFeedbackMode(e.target.value)}
         >
@@ -130,21 +101,35 @@ const AdminConfig = () => {
           ))}
         </TextField>
 
+        {/* NEW: rounds per domain */}
+        <TextField
+          label="Landscape rounds"
+          type="number"
+          value={landscapeRounds}
+          onChange={(e) => setLandscapeRounds(e.target.value)}
+        />
+        <TextField
+          label="Celeb rounds"
+          type="number"
+          value={celebRounds}
+          onChange={(e) => setCelebRounds(e.target.value)}
+        />
+
         <Button variant="contained" onClick={handleSave}>
-          Save
+          Save & Reload
         </Button>
 
         <Button
           variant="outlined"
           color="secondary"
-          onClick={() => navigate("/introduction")}
+          onClick={() => navigate("/recording-pre-survey")}
         >
           Go to Study
         </Button>
 
         {saved && (
           <Typography color="green">
-            Saved. Page will reload with new config.
+            Saved. The page is reloading with new config.
           </Typography>
         )}
       </Stack>

@@ -16,7 +16,6 @@ export const MicCheck = (props) => {
 
   const mediaData = resolveMediaData(appConfig.mode);
 
-  const nextLink = modeRoutes[appConfig.mode] || modeRoutes.image;
 
   return (
     <Container maxWidth="md" style={{ textAlign: "center", marginTop: "30px" }}>
@@ -29,16 +28,11 @@ export const MicCheck = (props) => {
       </Typography>
 
       <RecordView
-        idx={0}
-        theme={{ name: "miccheck" }}
-        screenIdx={0}
+        isMicCheck
         mediaData={appConfig.supportedModes[appConfig.mode]}
-        contentType={appConfig.supportedModes[appConfig.mode].type}
-        last={false}
-        isMicCheck={true}
-        lastScreen={false}
+        nextLink="/study/landscapes/1"
         state={props.state}
-        nextLink={nextLink}
+        feedbackMode={appConfig.feedbackMode}
       />
     </Container>
   );

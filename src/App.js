@@ -14,6 +14,7 @@ import SelectImagePage from './components/recording/SelectImagePage';
 import SelectVideoPage from './components/recording/SelectVideoPage';
 import RecordVideoPage from './components/recording/RecordVideoPage';
 import AdminConfig from './components/admin/AdminConfig';
+import ImageRoundPage from './components/recording/ImageRoundPage';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -85,7 +86,12 @@ function App() {
             {/* Thanks Page (always accessible) */}
             <Route path="/thanks" element={<End success />} />
 
-            <Route path="/select-image" element={<SelectImagePage state={state} />} />
+            {/*<Route path="/select-image" element={<SelectImagePage state={state} />} />*/}
+
+            <Route 
+              path="/study/:domain/:round"
+              element={<ImageRoundPage state={state} />}
+            />
 
             {/* Study Round */}
             <Route path="/select-video" element={<SelectVideoPage state={state} />} />

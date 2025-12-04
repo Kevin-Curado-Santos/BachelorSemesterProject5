@@ -35,15 +35,13 @@ with app.app_context():
     db.create_all()
 
 
-DATA_DIR = Path(os.path.dirname(__file__)).parent / "data" / "images"
-USER_DATA_DIR = Path(os.path.dirname(__file__)).parent / "data" / "user_char"
-AUDIO_DIR = Path(os.path.dirname(__file__)).parent / "data" / "audio"
-TEXT_DIR = Path(os.path.dirname(__file__)).parent / "data" / "text"
-
 
 BASE_DIR = Path(os.path.dirname(__file__))        # /app
 DATA_DIR = BASE_DIR / "data"                      # /app/data
 TEXT_DIR = DATA_DIR / "text"                      # /app/data/text
+AUDIO_DIR = DATA_DIR / "audio"                    # /app/data/audio
+USER_DATA_DIR = DATA_DIR / "user_char"            # /app/data/user_char
+LOG_MEDIA_DIR = DATA_DIR / "media_logs"           # /app/data/media_logs
 
 
 
@@ -103,6 +101,7 @@ def save_audio():
 @app.route("/api/saveText", methods=["POST"], strict_slashes=False)
 def save_text():
     f = request.files["file"]
+    
     anonId = request.form.get("anonId", "unknown")
     tag = request.form.get("tag", "text")
 
@@ -117,21 +116,21 @@ def save_text():
     return resp
 
 
+@app.route("/api/logRound", methods=["POST"])
+def log_round():
+    data = request.json
+    anon = data.get("anonId", "unknown")
 
-@app.route("/api/logMedia", methods=["POST"])
-def log_media():
-    f = request.files["file"]
-    anonId = request.form.get("anonId", "unknown")
-    
-    os.makedirs(TEXT_DIR, exist_ok=True)
-    
-    
-    file_path = os.path.join(TEXT_DIR, f"{anonId}.txt")
-    f.save(file_path)
-    
-    resp = json.jsonify("Text received and saved!")
-    resp.headers.add("Access-Control-Allow-Origin", "*")
-    return resp
+    LOG_DIR = Path("data/round_logs")
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+    out_path = LOG_DIR / f"{anon}_rounds.jsonl"
+
+    # append json line
+    with open(out_path, "a") as f:
+        f.write(json.dumps(data) + "\n")
+
+    return json.jsonify({"status": "ok"})
 
 
 audio_flist = glob("data/audio/*_[0-9].webm")
@@ -166,26 +165,98 @@ def get_audio_pair(pairs=pairs):
 
 @app.route("/api/images", methods=["GET"])
 def list_images():
-    base_dir = os.path.join(os.path.dirname(__file__), "data", "images")
-    ai_dir = os.path.join(base_dir, "ai")
-    human_dir = os.path.join(base_dir, "human")
+    domain = request.args.get("domain", "landscapes")  # "landscape" from frontend
 
-    ai_files = os.listdir(ai_dir) if os.path.isdir(ai_dir) else []
-    human_files = os.listdir(human_dir) if os.path.isdir(human_dir) else []
+    # map logical domain to actual folder name
+    folder_domain = "landscapes" if domain == "landscape" else domain
 
-    random.shuffle(ai_files)
-    random.shuffle(human_files)
+    base_dir = os.path.join(
+        os.path.dirname(__file__), "data", "images", folder_domain
+    )
 
-    ai_urls = [f"/api/image/ai/{f}" for f in ai_files]
-    human_urls = [f"/api/image/human/{f}" for f in human_files]
+    if not os.path.isdir(base_dir):
+        return json.jsonify({"error": "unknown domain", "domain": domain}), 400
 
-    return json.jsonify({"ai": ai_urls, "human": human_urls})
+    if domain == "landscapes":  # still use logical name here
+        human_dir = os.path.join(base_dir, "human")
+        human_files = (
+            [f for f in os.listdir(human_dir) if not f.startswith(".")]
+            if os.path.isdir(human_dir)
+            else []
+        )
 
-@app.route("/api/image/<kind>/<filename>", methods=["GET"])
-def serve_image(kind, filename):
-    base_dir = os.path.join(os.path.dirname(__file__), "data", "images")
-    folder = "ai" if kind == "ai" else "human"
-    return send_from_directory(os.path.join(base_dir, folder), filename)
+        model_dirs = [
+            d
+            for d in os.listdir(base_dir)
+            if os.path.isdir(os.path.join(base_dir, d)) and d != "human"
+        ]
+
+        models = {}
+        for m in model_dirs:
+          m_dir = os.path.join(base_dir, m)
+          m_files = [
+              f for f in os.listdir(m_dir) if not f.startswith(".")
+          ]
+          models[m] = [
+              f"/api/image/{domain}/{m}/{fname}" for fname in m_files
+          ]
+
+        human_urls = [
+            f"/api/image/{domain}/human/{fname}" for fname in human_files
+        ]
+
+        return json.jsonify(
+            {
+                "domain": domain,
+                "human": human_urls,
+                "models": models,
+            }
+        )
+
+    if domain == "celeb":
+        fake_dir = os.path.join(base_dir, "fake")
+        human_dir = os.path.join(base_dir, "human")
+
+        fake_files = (
+            [f for f in os.listdir(fake_dir) if not f.startswith(".")]
+            if os.path.isdir(fake_dir)
+            else []
+        )
+        human_files = (
+            [f for f in os.listdir(human_dir) if not f.startswith(".")]
+            if os.path.isdir(human_dir)
+            else []
+        )
+
+        fake_urls = [
+            f"/api/image/{domain}/fake/{fname}" for fname in fake_files
+        ]
+        human_urls = [
+            f"/api/image/{domain}/human/{fname}" for fname in human_files
+        ]
+
+        return json.jsonify(
+            {
+                "domain": domain,
+                "fake": fake_urls,
+                "human": human_urls,
+            }
+        )
+
+    return json.jsonify({"error": "unsupported domain", "domain": domain}), 400
+
+
+
+@app.route("/api/image/<domain>/<category>/<filename>", methods=["GET"])
+def serve_image_domain(domain, category, filename):
+    folder_domain = "landscapes" if domain == "landscapes" else domain
+    base_dir = os.path.join(
+        os.path.dirname(__file__), "data", "images", folder_domain, category
+    )
+    return send_from_directory(base_dir, filename)
+
+
+
 
 
 @app.route("/api/videos", methods=["GET"])
