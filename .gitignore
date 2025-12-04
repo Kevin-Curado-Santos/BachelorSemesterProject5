@@ -5,8 +5,8 @@ api/data/user_votes/*
 !api/data/user_votes/.gitkeep
 api/data/audio/*
 !api/data/audio/.gitkeep
-api/data/media_logs/*
-!api/data/media_logs/.gitkeep
+api/data/round_logs/*
+!api/data/round_logs/.gitkeep
 api/data/text/*
 !api/data/text/.gitkeep
 
