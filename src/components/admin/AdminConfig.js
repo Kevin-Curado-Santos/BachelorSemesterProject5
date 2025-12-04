@@ -1,4 +1,3 @@
-// src/components/admin/AdminConfig.js
 import React, { useState } from "react";
 import {
   Container,
@@ -38,7 +37,7 @@ const AdminConfig = () => {
   );
 
   const [landscapeRounds, setLandscapeRounds] = useState(
-    (stored.rounds && stored.rounds.landscape) || 4
+    (stored.rounds && stored.rounds.landscapes) || 4
   );
   const [celebRounds, setCelebRounds] = useState(
     (stored.rounds && stored.rounds.celeb) || 4
@@ -52,7 +51,7 @@ const AdminConfig = () => {
       itemsPerRound: Number(itemsPerRound),
       feedbackMode,
       rounds: {
-        landscape: Math.max(1, Number(landscapeRounds) || 1),
+        landscapes: Math.max(1, Number(landscapeRounds) || 1),
         celeb: Math.max(1, Number(celebRounds) || 1),
       },
     };
@@ -101,7 +100,6 @@ const AdminConfig = () => {
           ))}
         </TextField>
 
-        {/* NEW: rounds per domain */}
         <TextField
           label="Landscape rounds"
           type="number"

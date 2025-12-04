@@ -19,7 +19,6 @@ export const appConfig = {
     },
   },
 
-  // NEW: rounds per domain
   rounds: stored.rounds || {
     landscapes: 2,
     celeb: 2,

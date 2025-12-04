@@ -165,10 +165,10 @@ def get_audio_pair(pairs=pairs):
 
 @app.route("/api/images", methods=["GET"])
 def list_images():
-    domain = request.args.get("domain", "landscapes")  # "landscape" from frontend
+    domain = request.args.get("domain", "landscapes") 
 
-    # map logical domain to actual folder name
-    folder_domain = "landscapes" if domain == "landscape" else domain
+    
+    folder_domain = "landscapes" if domain == "landscapes" else domain
 
     base_dir = os.path.join(
         os.path.dirname(__file__), "data", "images", folder_domain
@@ -177,7 +177,7 @@ def list_images():
     if not os.path.isdir(base_dir):
         return json.jsonify({"error": "unknown domain", "domain": domain}), 400
 
-    if domain == "landscapes":  # still use logical name here
+    if domain == "landscapes": 
         human_dir = os.path.join(base_dir, "human")
         human_files = (
             [f for f in os.listdir(human_dir) if not f.startswith(".")]

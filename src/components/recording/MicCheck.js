@@ -24,7 +24,7 @@ export const MicCheck = (props) => {
       </Typography>
       <Typography variant="body1" gutterBottom>
         Let's make sure your {appConfig.feedbackMode === "mic" ? "microphone" : "keyboard"} works. Please describe the {mediaData.type} briefly
-        — your browser may ask for mic access; choose "Allow".
+        {appConfig.feedbackMode === "mic" ? "— your browser may ask for mic access; choose \"Allow\"." : "."}
       </Typography>
 
       <RecordView

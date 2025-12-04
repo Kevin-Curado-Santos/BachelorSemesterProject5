@@ -1,4 +1,3 @@
-// src/components/recording/ImageRoundPage.js
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Typography, Container } from "@mui/material";
@@ -10,10 +9,10 @@ export const ImageRoundPage = (props) => {
   const { domain, round } = useParams();
   const roundNum = parseInt(round, 10) || 1;
 
-  // get rounds for current domain from config (fallback 4)
   const totalRounds =
     (appConfig.rounds && appConfig.rounds[domain]) ||
     (domain === "landscapes" ? 4 : 4);
+
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [images, setImages] = useState([]);
@@ -94,7 +93,7 @@ export const ImageRoundPage = (props) => {
         label: img.label,
         model: img.model || null,
       },
-      // user now asked to pick HUMAN
+      
       correctGuess: img.label === "human",
       timestamp: Date.now(),
     };
@@ -106,7 +105,6 @@ export const ImageRoundPage = (props) => {
     }).catch(console.error);
   };
 
-  // navigation based on per-domain totalRounds
   let nextLink = "/thanks";
   let last = false;
 
@@ -114,7 +112,7 @@ export const ImageRoundPage = (props) => {
     if (roundNum < totalRounds) {
       nextLink = `/study/landscapes/${roundNum + 1}`;
     } else {
-      // move to first celeb round
+      
       nextLink = `/study/celeb/1`;
     }
   } else if (domain === "celeb") {
